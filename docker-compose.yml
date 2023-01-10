@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8.0.31
+    container_name: mysql_db
+    restart: unless-stopped
+    environment:
+      MYSQL_USER: newUser
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: dbname
+
+    volumes:
+      - my-db:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - proxyNet
+
+  go:
+    build:
+      context: .
+    container_name: go
+    restart: on-failure
+    ports:
+      - 9010:9010
+    depends_on:
+      - "db"
+    networks:
+      - proxyNet
+    
+
+volumes:
+  my-db:
+
+networks:
+  proxyNet:
+    driver: "bridge"
+
+
